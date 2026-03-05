@@ -21,6 +21,7 @@ module axi_traffic_generator_wrapper #(
     // input ports
     input ext_start,
     input ext_stop,
+    input [AddrWidth-1:0] start_address_i,
 
     // master ports
     output [IdWidth-1:0] m_axi_atg_0_awid,
@@ -78,6 +79,7 @@ module axi_traffic_generator_wrapper #(
         // input ports
         .ext_start(ext_start),
         .ext_stop(ext_stop),
+        .start_address_i(start_address_i),
 
         // master
         .m_axi_atg_awid_o({m_axi_atg_0_awid}),

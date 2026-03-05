@@ -68,7 +68,8 @@ module axi_traffic_generator_flat #(
 
     // subordinate ports
     input ext_start,      
-    input ext_stop
+    input ext_stop,
+    input logic [AddrWidth-1:0] start_address_i
 );
 
     // Define unused AXI signals for FPGA wrapper
@@ -115,7 +116,8 @@ module axi_traffic_generator_flat #(
         .mst_req_o (m_req[0]),
         .mst_resp_i(m_rsp[0]),
         .ext_start,
-        .ext_stop
+        .ext_stop,
+        .start_address_i
     );
 
 endmodule
