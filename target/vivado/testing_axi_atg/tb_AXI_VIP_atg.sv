@@ -3,11 +3,15 @@
 import axi_vip_pkg::*;
 import design_1_axi_vip_0_1_pkg::*;
 
+// address width
+localparam int unsigned AddrWidth = 32'd64;
+
 // clk and rst
 bit clk         = 0;
 bit resetn      = 0;
 bit ext_start   = 0;
 bit ext_stop    = 0;
+bit [AddrWidth-1:0] start_address_i = 'h0;
 
 module tb_AXI_VIP_Master();
 always #5ns clk = ~clk;
@@ -17,7 +21,8 @@ design_1_wrapper DUT
     .clk_0(clk),
     .resetn_0(resetn),
     .ext_start_0(ext_start),
-    .ext_stop_0(ext_stop)
+    .ext_stop_0(ext_stop),
+    .start_address_i_0(start_address_i)
 );
 
 design_1_axi_vip_0_1_slv_mem_t slv_agent;
@@ -43,6 +48,7 @@ initial begin
     // -------------------------
     @(posedge clk);
     ext_start = 1;
+    start_address_i = 'h0; // setting the addresses to all 0s
     @(posedge clk);
     ext_start = 0;
 
