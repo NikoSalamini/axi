@@ -174,44 +174,37 @@ always_comb begin
 
     // init start address for the interference
     INIT_START_ADDR: begin
-		  burst_address_d	= start_address_q;	// init burst start address
+      burst_address_d	= start_address_q;	// init burst start address
       state_d = SET_NEXT_ADDRESS;         // setting the next address for the burst
     end
 
     // set next address for the burst
     SET_NEXT_ADDRESS: begin
-      // check for stop
-      if (stop_req_q) begin
-              stop_req_d = '0;      // clean stop sticky reg
-              state_d    = IDLE;    // back to IDLE
-          end
-      else begin
-        // set aw.addr 
-        mst_req_o.aw_valid  = '1;					      // set aw_valid
-        mst_req_o.aw.addr   = burst_address_q;  // start address to be used
-        if (mst_resp_i.aw_ready) begin
-          // set state and counters
-          state_d     = SEND_BURSTS;    // next state 
-          cnt_beats_d = '0;					    // reset the counter
-          cnt_ways_d	= cnt_ways_q + 1;	// increase the number of ways that has been targeted
+      // set aw.addr 
+      mst_req_o.aw_valid  = '1;					      // set aw_valid
+      mst_req_o.aw.addr   = burst_address_q;  // start address to be used
+      if (mst_resp_i.aw_ready) begin
+        // set state and counters
+        state_d     = SEND_BURSTS;    // next state 
+        cnt_beats_d = '0;					    // reset the counter
+        cnt_ways_d	= cnt_ways_q + 1;	// increase the number of ways that has been targeted
 
-          /* set the address for the next transaction */
-          if (cnt_ways_q == SetAssociativity - 1) begin 
-            // move to next cache line
-            burst_address_d = burst_address_q;                          // keep all the other bits the same
-            burst_address_d[CachelineIdxUpper:CachelineIdxLower] =
-              burst_address_q[CachelineIdxUpper:CachelineIdxLower] + 1; // modify the bits involving the cachelines
+        /* set the address for the next transaction */
+        if (cnt_ways_q == SetAssociativity - 1) begin 
+          // move to next cache line
+          burst_address_d = burst_address_q;                          // keep all the other bits the same
+          burst_address_d[CachelineIdxUpper:CachelineIdxLower] =
+            burst_address_q[CachelineIdxUpper:CachelineIdxLower] + 1; // modify the bits involving the cachelines
 
-            // reset the tag for the ways
-            burst_address_d[TagIdxUpper:TagIdxLower] = '0;              
-            cnt_ways_d = '0;
-          end
-          else begin
-              // move the next tag
-              burst_address_d = burst_address_q;
-              burst_address_d[TagIdxUpper:TagIdxLower] = burst_address_q[TagIdxUpper:TagIdxLower] + 1;
-          end 
+          // reset the tag for the ways
+          burst_address_d[TagIdxUpper:TagIdxLower] = '0;              
+          cnt_ways_d = '0;
         end
+        else begin
+            // move the next tag
+            burst_address_d = burst_address_q;
+            burst_address_d[TagIdxUpper:TagIdxLower] = burst_address_q[TagIdxUpper:TagIdxLower] + 1;
+        end 
       end
     end
 
@@ -228,16 +221,21 @@ always_comb begin
         mst_req_o.w.last = 1'b1;
       end
 
-        // wait until slave is ready
-        if (mst_resp_i.w_ready) begin
-          // update beat counters
-          cnt_beats_d = cnt_beats_q + 1;  
+      // wait until slave is ready
+      if (mst_resp_i.w_ready) begin
+        // update beat counters
+        cnt_beats_d = cnt_beats_q + 1;  
 
-          // check for the last beat of the burst
-          if (cnt_beats_q == NumBurstBeats - 1) begin
+        // check for the last beat of the burst
+        if (cnt_beats_q == NumBurstBeats - 1) begin
+          if (stop_req_q) begin
+            stop_req_d = '0;      // clean stop sticky reg  
+            state_d    = IDLE;    // back to IDLE
+          end else begin
             state_d = SET_NEXT_ADDRESS;  // init the address for the next burst
           end
         end
+      end
     end
 
     default: ; /* nothing */

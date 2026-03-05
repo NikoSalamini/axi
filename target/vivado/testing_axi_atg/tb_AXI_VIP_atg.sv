@@ -4,7 +4,7 @@ import axi_vip_pkg::*;
 import design_1_axi_vip_0_1_pkg::*;
 
 // address width
-localparam int unsigned AddrWidth = 32'd64;
+localparam int unsigned AddrWidth = 32'd48;
 
 // clk and rst
 bit clk         = 0;
@@ -53,7 +53,7 @@ initial begin
     ext_start = 0;
 
     // wait some time (traffic running)
-    #10000ns
+    #5000ns
 
     // -------------------------
     // STOP PULSE
@@ -62,6 +62,27 @@ initial begin
     ext_stop = 1;
     @(posedge clk);
     ext_stop = 0;
+
+    // -------------------------
+    // START PULSE
+    // -------------------------
+    @(posedge clk);
+    ext_start = 1;
+    start_address_i = 48'h8; // setting the addresses to all 0s
+    @(posedge clk);
+    ext_start = 0;
+
+    // wait some time (traffic running)
+    #5000ns
+
+    // -------------------------
+    // STOP PULSE
+    // -------------------------
+    @(posedge clk);
+    ext_stop = 1;
+    @(posedge clk);
+    ext_stop = 0;
+
 end
 endmodule
 
