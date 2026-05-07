@@ -13,7 +13,9 @@ module axi_traffic_generator_wrapper #(
     /// ID width of all AXI4+ATOP ports
     parameter integer IdWidth   = 'd4,
     /// User signal width of all AXI4+ATOP ports
-    parameter integer UserWidth = 'd4
+    parameter integer UserWidth = 'd4,
+    /// Skip Cycles config
+    parameter integer SkipCyclesWidth = 'd8
 ) (
     input clk,
     input resetn,
@@ -22,6 +24,7 @@ module axi_traffic_generator_wrapper #(
     input ext_start,
     input ext_stop,
     input [AddrWidth-1:0] start_address_i,
+    input [SkipCyclesWidth-1:0] skip_cycles_i,
 
     // master ports
     output [IdWidth-1:0] m_axi_atg_0_awid,
@@ -80,6 +83,7 @@ module axi_traffic_generator_wrapper #(
         .ext_start(ext_start),
         .ext_stop(ext_stop),
         .start_address_i(start_address_i),
+        .skip_cycles_i(skip_cycles_i),
 
         // master
         .m_axi_atg_awid_o({m_axi_atg_0_awid}),

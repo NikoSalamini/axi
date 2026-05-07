@@ -15,6 +15,8 @@ module axi_traffic_generator_flat #(
     parameter int unsigned DataWidth     = 32'd64,
     parameter int unsigned IdWidth       = 32'd4,
     parameter int unsigned UserWidth     = 32'd4,
+    /// Skip Cycles Width
+    parameter integer SkipCyclesWidth = 'd8,
     // derived types for AXI interface
     parameter type axi_addr_t = logic [AddrWidth-1  :0],
     parameter type axi_data_t = logic [DataWidth-1  :0],
@@ -69,7 +71,8 @@ module axi_traffic_generator_flat #(
     // subordinate ports
     input ext_start,      
     input ext_stop,
-    input logic [AddrWidth-1:0] start_address_i
+    input logic [AddrWidth-1:0] start_address_i,
+    input logic [SkipCyclesWidth-1:0] skip_cycles_i
 );
 
     // Define unused AXI signals for FPGA wrapper
@@ -117,7 +120,8 @@ module axi_traffic_generator_flat #(
         .mst_resp_i(m_rsp[0]),
         .ext_start,
         .ext_stop,
-        .start_address_i
+        .start_address_i,
+        .skip_cycles_i
     );
 
 endmodule
